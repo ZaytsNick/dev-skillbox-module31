@@ -32,7 +32,8 @@ public:
         {
             if (*(this->quantity) == 1)
             {
-                delete this->quantity, this->toy;
+                delete this->quantity; 
+                delete this->toy;
                 this->toy = other.toy;
                 this->quantity = other.quantity;
                 *(other.quantity) += 1;
@@ -47,16 +48,28 @@ public:
         }        
     }
     ~shared_ptr_toy() {
-        if (*quantity == 1)
-            delete quantity, toy;
+        if (quantity == nullptr || *quantity == 1)
+        {
+            delete toy;
+            delete quantity;
+        }
         else
             *quantity -= 1;
     }
     void reset()
     {
-        delete toy;
-        *quantity = 0;
+        if (quantity == nullptr)
+            return;
+        if (*quantity == 1)
+        {
+            delete toy;
+            delete quantity;
+        }
+        else
+            *quantity -= 1;
         toy = nullptr;
+        quantity = nullptr;
+        
     }
     Toy* get()const
     {
@@ -64,6 +77,8 @@ public:
     }
     int use_count()const
     {
+        if (quantity == nullptr)
+            return 0;
         return *quantity;
     }
     std::string getToyName()
@@ -99,6 +114,5 @@ int main() {
         << toy_02.getToyName() << " links:" << toy_02.use_count() << "  "
         << toy_03.getToyName() << " links:" << toy_03.use_count() << std::endl;
     std::cout << "=================================================" << std::endl;
-    toy_03.reset();
     return 0;
 }
